@@ -480,7 +480,7 @@ public abstract class AbsHListView extends AdapterView<ListAdapter> implements V
 	/**
 	 * Maximum distance to overfling during edge effects
 	 */
-	int mOverflingDistance;
+	int mOverflingDistance = 7;
 
 	// These two EdgeGlows are always set and used together.
 	// Checking one for null is as good as checking both.
@@ -694,8 +694,10 @@ public abstract class AbsHListView extends AdapterView<ListAdapter> implements V
 		mTouchSlop = configuration.getScaledTouchSlop();
 		mMinimumVelocity = configuration.getScaledMinimumFlingVelocity();
 		mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
-		mOverscrollDistance = configuration.getScaledOverscrollDistance();
-		mOverflingDistance = configuration.getScaledOverflingDistance();
+		if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)) {
+			mOverscrollDistance = configuration.getScaledOverscrollDistance();
+			mOverflingDistance = configuration.getScaledOverflingDistance();
+		}
 		mViewHelper = ViewHelperFactory.create( this );
 	}
 
@@ -5855,5 +5857,24 @@ public abstract class AbsHListView extends AdapterView<ListAdapter> implements V
 		} else {
 			return null;
 		}
+	}
+	
+	@Override
+	protected boolean overScrollBy(int deltaX, int deltaY, int scrollX,
+			int scrollY, int scrollRangeX, int scrollRangeY,
+			int maxOverScrollX, int maxOverScrollY, boolean isTouchEvent) {
+		if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)) {
+			return super.overScrollBy(deltaX, deltaY, scrollX, scrollY, scrollRangeX,
+							scrollRangeY, maxOverScrollX, maxOverScrollY, isTouchEvent);
+		}
+		return false;
+	}
+	
+	@Override
+	public int getOverScrollMode() {
+		if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)) {
+			return super.getOverScrollMode();
+		}
+		return OVER_SCROLL_NEVER;
 	}
 }
